@@ -73,7 +73,7 @@ elseif pStruct.rampTypeFlag == 6    % Repeated Square Waves
     end
 elseif pStruct.rampTypeFlag == 8    % Iso-Power Repeated Square Waves
     frequency = pStruct.tmpFrequency;
-    period = 1000 / frequency;
+    period = floor(1000 / frequency);
     dutyCycle = 0.5;       % Duty cycle of the square waves
     pulseDuration = round(period * dutyCycle);
     numPulses = floor(inDur2 / period);
@@ -88,7 +88,7 @@ elseif pStruct.rampTypeFlag == 8    % Iso-Power Repeated Square Waves
     end
 elseif pStruct.rampTypeFlag == 9    % Sinusoidal Waves with Same Max Amplitude as Square
     frequency = pStruct.tmpFrequency;
-    period = 1000 / frequency;
+    period = floor(1000 / frequency);
     numPulses = floor(inDur2 / period);
     
     % Generate time vector for one period
@@ -104,7 +104,7 @@ elseif pStruct.rampTypeFlag == 9    % Sinusoidal Waves with Same Max Amplitude a
     end
 elseif pStruct.rampTypeFlag == 10    % Sinusoidal Waves with Same Area Under Curve as Square
     frequency = pStruct.tmpFrequency;
-    period = 1000 / frequency;
+    period = floor(1000 / frequency);
     numPulses = floor(inDur2 / period);
     
     % Generate time vector for one period

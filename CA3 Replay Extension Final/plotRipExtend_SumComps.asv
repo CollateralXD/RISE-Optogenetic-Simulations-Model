@@ -3,9 +3,9 @@
 % LKW 9/5/2021
 set(0,'DefaultLineLineWidth',2)
 
-distNoiseFlag = 0;
+distNoiseFlag = 1;
 opsinNoiseFlag = 0;
-VNoiseFlag = 1;
+VNoiseFlag = 0;
 
 pStruct.nRamps = 21;
 pStruct.nPs = 101;
@@ -193,12 +193,12 @@ if VNoiseFlag == 1
 
     % Load Variables
     % No Distance Noise
-    FRC_NVN = load('.\CA3 All Noise Variables\FR_IMA_Ww_32_perms1000_CI95.mat');
-    FRP_NVN = load('.\CA3 All Noise Variables\FR_IP_Ww_32_perms1000_CI95.mat');
-    DRC_NVN = load('.\CA3 All Noise Variables\DR_IMA_Ww_32_perms1000_CI95.mat');
-    DRP_NVN = load('.\CA3 All Noise Variables\DR_IP_Ww_32_perms1000_CI95.mat');
-    BRC_NVN = load('.\CA3 All Noise Variables\BR_IMA_Ww_32_perms1000_CI95.mat');
-    BRP_NVN = load('.\CA3 All Noise Variables\BR_IP_Ww_32_perms1000_CI95.mat');
+    FRC_NVN = load('.\CA3 All Noise Variables\FR_IMA_1000_CI95.mat');
+    FRP_NVN = load('.\CA3 All Noise Variables\FR_IP_1000_CI95.mat');
+    DRC_NVN = load('.\CA3 All Noise Variables\DR_IMA_1000_CI95.mat');
+    DRP_NVN = load('.\CA3 All Noise Variables\DR_IP_1000_CI95.mat');
+    BRC_NVN = load('.\CA3 All Noise Variables\BR_IMA_1000_CI95.mat');
+    BRP_NVN = load('.\CA3 All Noise Variables\BR_IP_1000_CI95.mat');
     % Distance Noise, 8mW Source, 5mW Threshold
     FRC_Amp02 = load('.\CA3 Voltage Noise Variables\FR_IMA_NAmp0_2_perms1000_CI95.mat');
     FRP_Amp02 = load('.\CA3 Voltage Noise Variables\FR_IP_NAmp0_2_perms1000_CI95.mat');

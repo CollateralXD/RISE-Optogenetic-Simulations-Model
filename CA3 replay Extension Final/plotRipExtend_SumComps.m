@@ -3,9 +3,9 @@
 % LKW 9/5/2021
 set(0,'DefaultLineLineWidth',2)
 
-distNoiseFlag = 1;
-opsinNoiseFlag = 1;
-VNoiseFlag = 0;
+distNoiseFlag = 0;
+opsinNoiseFlag = 0;
+VNoiseFlag = 1;
 
 pStruct.nRamps = 21;
 pStruct.nPs = 101;
@@ -14,26 +14,26 @@ pStruct.nPs = 101;
 if distNoiseFlag == 1    
     % Load Variables
     % No Distance Noise
-    FRC_NDN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\FR_IMA_1000_CI95.mat');
-    FRP_NDN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\FR_IP_1000_CI95.mat');
-    DRC_NDN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\DR_IMA_1000_CI95.mat');
-    DRP_NDN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\DR_IP_1000_CI95.mat');
-    BRC_NDN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\BR_IMA_1000_CI95.mat');
-    BRP_NDN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\BR_IP_1000_CI95.mat');
+    FRC_NDN = load('.\CA3 All Noise Variables\FR_IMA_Ww_32_perms1000_CI95.mat');
+    FRP_NDN = load('.\CA3 All Noise Variables\FR_IP_Ww_32_perms1000_CI95.mat');
+    DRC_NDN = load('.\CA3 All Noise Variables\DR_IMA_Ww_32_perms1000_CI95.mat');
+    DRP_NDN = load('.\CA3 All Noise Variables\DR_IP_Ww_32_perms1000_CI95.mat');
+    BRC_NDN = load('.\CA3 All Noise Variables\BR_IMA_Ww_32_perms1000_CI95.mat');
+    BRP_NDN = load('.\CA3 All Noise Variables\BR_IP_Ww_32_perms1000_CI95.mat');
     % Distance Noise, 8mW Source, 5mW Threshold
-    FRC_Ir8 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\FR_IMA_DNoise_Irr8_perms1000_CI95.mat');
-    FRP_Ir8 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\FR_IP_DNoise_Irr8_perms1000_CI95.mat');
-    DRC_Ir8 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\DR_IMA_DNoise_Irr8_perms1000_CI95.mat');
-    DRP_Ir8 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\DR_IP_DNoise_Irr8_perms1000_CI95.mat');
-    BRC_Ir8 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\BR_IMA_DNoise_Irr8_perms1000_CI95.mat');
-    BRP_Ir8 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\BR_IP_DNoise_Irr8_perms1000_CI95.mat');
+    FRC_Ir8 = load('.\CA3 Light Scatter Noise Variables\FR_IMA_DNoise_Irr8_perms1000_CI95.mat');
+    FRP_Ir8 = load('.\CA3 Light Scatter Noise Variables\FR_IP_DNoise_Irr8_perms1000_CI95.mat');
+    DRC_Ir8 = load('.\CA3 Light Scatter Noise Variables\DR_IMA_DNoise_Irr8_perms1000_CI95.mat');
+    DRP_Ir8 = load('.\CA3 Light Scatter Noise Variables\DR_IP_DNoise_Irr8_perms1000_CI95.mat');
+    BRC_Ir8 = load('.\CA3 Light Scatter Noise Variables\BR_IMA_DNoise_Irr8_perms1000_CI95.mat');
+    BRP_Ir8 = load('.\CA3 Light Scatter Noise Variables\BR_IP_DNoise_Irr8_perms1000_CI95.mat');
     % Distance Noise, 10mW Source, 5mW Threshold
-    FRC_Ir10 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\FR_IMA_DNoise_Irr10_perms1000_CI95.mat');
-    FRP_Ir10 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\FR_IP_DNoise_Irr10_perms1000_CI95.mat');
-    DRC_Ir10 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\DR_IMA_DNoise_Irr10_perms1000_CI95.mat');
-    DRP_Ir10 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\DR_IP_DNoise_Irr10_perms1000_CI95.mat');
-    BRC_Ir10 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\BR_IMA_DNoise_Irr10_perms1000_CI95.mat');
-    BRP_Ir10 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\BR_IP_DNoise_Irr10_perms1000_CI95.mat');
+    FRC_Ir10 = load('.\CA3 Light Scatter Noise Variables\FR_IMA_DNoise_Irr10_perms1000_CI95.mat');
+    FRP_Ir10 = load('.\CA3 Light Scatter Noise Variables\FR_IP_DNoise_Irr10_perms1000_CI95.mat');
+    DRC_Ir10 = load('.\CA3 Light Scatter Noise Variables\DR_IMA_DNoise_Irr10_perms1000_CI95.mat');
+    DRP_Ir10 = load('.\CA3 Light Scatter Noise Variables\DR_IP_DNoise_Irr10_perms1000_CI95.mat');
+    BRC_Ir10 = load('.\CA3 Light Scatter Noise Variables\BR_IMA_DNoise_Irr10_perms1000_CI95.mat');
+    BRP_Ir10 = load('.\CA3 Light Scatter Noise Variables\BR_IP_DNoise_Irr10_perms1000_CI95.mat');
 
     % Plotting Dist Noise Duration Shuffle Comparisons
     pStruct.yUp = [4.5 15];
@@ -67,7 +67,7 @@ if distNoiseFlag == 1
     [caf,daf] = plotSumComp(BRP_NDN.BR_IP_shufs,BRP_Ir8.BR_IP_shufs,BRP_Ir10.BR_IP_shufs,pStruct);
 
     % Save
-    saveDir = 'F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\DistNoise_searches\';
+    saveDir = '';
     saveas(caa,[saveDir,'FR_IMA_shufflesComp'],'fig')
     saveas(caa,[saveDir,'FR_IMA_shufflesComp'],'svg')
     saveas(cab,[saveDir,'DR_IMA_shufflesComp'],'fig')
@@ -104,26 +104,26 @@ if opsinNoiseFlag == 1
 
     % Load Variables
     % No Opsin Noise
-    FRC_NON = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\FR_IMA_1000_CI95.mat');
-    FRP_NON = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\FR_IP_1000_CI95.mat');
-    DRC_NON = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\DR_IMA_1000_CI95.mat');
-    DRP_NON = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\DR_IP_1000_CI95.mat');
-    BRC_NON = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\BR_IMA_1000_CI95.mat');
-    BRP_NON = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\BR_IP_1000_CI95.mat');
+    FRC_NON = load('.\CA3 All Noise Variables\FR_IMA_Ww_32_perms1000_CI95.mat');
+    FRP_NON = load('.\CA3 All Noise Variables\FR_IP_Ww_32_perms1000_CI95.mat');
+    DRC_NON = load('.\CA3 All Noise Variables\DR_IMA_Ww_32_perms1000_CI95.mat');
+    DRP_NON = load('.\CA3 All Noise Variables\DR_IP_Ww_32_perms1000_CI95.mat');
+    BRC_NON = load('.\CA3 All Noise Variables\BR_IMA_Ww_32_perms1000_CI95.mat');
+    BRP_NON = load('.\CA3 All Noise Variables\BR_IP_Ww_32_perms1000_CI95.mat');
     % Opsin Noise, 0.05
-    FRC_Sg05 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\FR_IMA_ChR2Noise_sigma0_05_perms1000_CI95.mat');
-    FRP_Sg05 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\FR_IP_ChR2Noise_sigma0_05_perms1000_CI95.mat');
-    DRC_Sg05 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\DR_IMA_ChR2Noise_sigma0_05_perms1000_CI95.mat');
-    DRP_Sg05 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\DR_IP_ChR2Noise_sigma0_05_perms1000_CI95.mat');
-    BRC_Sg05 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\BR_IMA_ChR2Noise_sigma0_05_perms1000_CI95.mat');
-    BRP_Sg05 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\BR_IP_ChR2Noise_sigma0_05_perms1000_CI95.mat');
+    FRC_Sg05 = load('.\CA3 Opsin Noise Variables\FR_IMA_ChR2Noise_sigma0_05_perms1000_CI95.mat');
+    FRP_Sg05 = load('.\CA3 Opsin Noise Variables\FR_IP_ChR2Noise_sigma0_05_perms1000_CI95.mat');
+    DRC_Sg05 = load('.\CA3 Opsin Noise Variables\DR_IMA_ChR2Noise_sigma0_05_perms1000_CI95.mat');
+    DRP_Sg05 = load('.\CA3 Opsin Noise Variables\DR_IP_ChR2Noise_sigma0_05_perms1000_CI95.mat');
+    BRC_Sg05 = load('.\CA3 Opsin Noise Variables\BR_IMA_ChR2Noise_sigma0_05_perms1000_CI95.mat');
+    BRP_Sg05 = load('.\CA3 Opsin Noise Variables\BR_IP_ChR2Noise_sigma0_05_perms1000_CI95.mat');
     % Distance Noise, 10mW Source, 5mW Threshold
-    FRC_Sg1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\FR_IMA_ChR2Noise_sigma0_1_perms1000_CI95.mat');
-    FRP_Sg1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\FR_IP_ChR2Noise_sigma0_1_perms1000_CI95.mat');
-    DRC_Sg1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\DR_IMA_ChR2Noise_sigma0_1_perms1000_CI95.mat');
-    DRP_Sg1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\DR_IP_ChR2Noise_sigma0_1_perms1000_CI95.mat');
-    BRC_Sg1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\BR_IMA_ChR2Noise_sigma0_1_perms1000_CI95.mat');
-    BRP_Sg1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\BR_IP_ChR2Noise_sigma0_1_perms1000_CI95.mat');
+    FRC_Sg1 = load('.\CA3 Opsin Noise Variables\FR_IMA_ChR2Noise_sigma0_1_perms1000_CI95.mat');
+    FRP_Sg1 = load('.\CA3 Opsin Noise Variables\FR_IP_ChR2Noise_sigma0_1_perms1000_CI95.mat');
+    DRC_Sg1 = load('.\CA3 Opsin Noise Variables\DR_IMA_ChR2Noise_sigma0_1_perms1000_CI95.mat');
+    DRP_Sg1 = load('.\CA3 Opsin Noise Variables\DR_IP_ChR2Noise_sigma0_1_perms1000_CI95.mat');
+    BRC_Sg1 = load('.\CA3 Opsin Noise Variables\BR_IMA_ChR2Noise_sigma0_1_perms1000_CI95.mat');
+    BRP_Sg1 = load('.\CA3 Opsin Noise Variables\BR_IP_ChR2Noise_sigma0_1_perms1000_CI95.mat');
 
     % Plotting Dist Noise Duration Shuffle Comparisons
     pStruct.yUp = [4 15];
@@ -157,7 +157,7 @@ if opsinNoiseFlag == 1
     [eaf,faf] = plotSumComp(BRP_NON.BR_IP_shufs,BRP_Sg05.BR_IP_shufs,BRP_Sg1.BR_IP_shufs,pStruct);
 
     % Save
-    saveDir = 'F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\ChR2Noise_searches\';
+    saveDir = '';
     saveas(eaa,[saveDir,'FR_IMA_shufflesComp'],'fig')
     saveas(eaa,[saveDir,'FR_IMA_shufflesComp'],'svg')
     saveas(eab,[saveDir,'DR_IMA_shufflesComp'],'fig')
@@ -193,26 +193,26 @@ if VNoiseFlag == 1
 
     % Load Variables
     % No Distance Noise
-    FRC_NVN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\FR_IMA_1000_CI95.mat');
-    FRP_NVN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\FR_IP_1000_CI95.mat');
-    DRC_NVN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\DR_IMA_1000_CI95.mat');
-    DRP_NVN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\DR_IP_1000_CI95.mat');
-    BRC_NVN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\BR_IMA_1000_CI95.mat');
-    BRP_NVN = load('F:\Research\Manuscripts\Computational Waveform\Final Code_V1\ComputationalWaveformMemory\Replay Extension Final\Variables\BR_IP_1000_CI95.mat');
+    FRC_NVN = load('.\CA3 All Noise Variables\FR_IMA_Ww_32_perms1000_CI95.mat');
+    FRP_NVN = load('.\CA3 All Noise Variables\FR_IP_Ww_32_perms1000_CI95.mat');
+    DRC_NVN = load('.\CA3 All Noise Variables\DR_IMA_Ww_32_perms1000_CI95.mat');
+    DRP_NVN = load('.\CA3 All Noise Variables\DR_IP_Ww_32_perms1000_CI95.mat');
+    BRC_NVN = load('.\CA3 All Noise Variables\BR_IMA_Ww_32_perms1000_CI95.mat');
+    BRP_NVN = load('.\CA3 All Noise Variables\BR_IP_Ww_32_perms1000_CI95.mat');
     % Distance Noise, 8mW Source, 5mW Threshold
-    FRC_Amp02 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\FR_IMA_NAmp0_2_perms1000_CI95.mat');
-    FRP_Amp02 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\FR_IP_NAmp0_2_perms1000_CI95.mat');
-    DRC_Amp02 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\DR_IMA_NAmp0_2_perms1000_CI95.mat');
-    DRP_Amp02 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\DR_IP_NAmp0_2_perms1000_CI95.mat');
-    BRC_Amp02 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\BR_IMA_NAmp0_2_perms1000_CI95.mat');
-    BRP_Amp02 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\BR_IP_NAmp0_2_perms1000_CI95.mat');
+    FRC_Amp02 = load('.\CA3 Voltage Noise Variables\FR_IMA_NAmp0_2_perms1000_CI95.mat');
+    FRP_Amp02 = load('.\CA3 Voltage Noise Variables\FR_IP_NAmp0_2_perms1000_CI95.mat');
+    DRC_Amp02 = load('.\CA3 Voltage Noise Variables\DR_IMA_NAmp0_2_perms1000_CI95.mat');
+    DRP_Amp02 = load('.\CA3 Voltage Noise Variables\DR_IP_NAmp0_2_perms1000_CI95.mat');
+    BRC_Amp02 = load('.\CA3 Voltage Noise Variables\BR_IMA_NAmp0_2_perms1000_CI95.mat');
+    BRP_Amp02 = load('.\CA3 Voltage Noise Variables\BR_IP_NAmp0_2_perms1000_CI95.mat');
     % Distance Noise, 10mW Source, 5mW Threshold
-    FRC_Amp1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\FR_IMA_NAmp1_perms1000_CI95.mat');
-    FRP_Amp1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\FR_IP_NAmp1_perms1000_CI95.mat');
-    DRC_Amp1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\DR_IMA_NAmp1_perms1000_CI95.mat');
-    DRP_Amp1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\DR_IP_NAmp1_perms1000_CI95.mat');
-    BRC_Amp1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\BR_IMA_NAmp1_perms1000_CI95.mat');
-    BRP_Amp1 = load('F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\BR_IP_NAmp1_perms1000_CI95.mat');
+    FRC_Amp1 = load('.\CA3 Voltage Noise Variables\FR_IMA_NAmp1_perms1000_CI95.mat');
+    FRP_Amp1 = load('.\CA3 Voltage Noise Variables\FR_IP_NAmp1_perms1000_CI95.mat');
+    DRC_Amp1 = load('.\CA3 Voltage Noise Variables\DR_IMA_NAmp1_perms1000_CI95.mat');
+    DRP_Amp1 = load('.\CA3 Voltage Noise Variables\DR_IP_NAmp1_perms1000_CI95.mat');
+    BRC_Amp1 = load('.\CA3 Voltage Noise Variables\BR_IMA_NAmp1_perms1000_CI95.mat');
+    BRP_Amp1 = load('.\CA3 Voltage Noise Variables\BR_IP_NAmp1_perms1000_CI95.mat');
 
     % Plotting Dist Noise Duration Shuffle Comparisons
     pStruct.yUp = [3 15];
@@ -246,7 +246,7 @@ if VNoiseFlag == 1
     [gaf,haf] = plotSumComp(BRP_NVN.BR_IP_shufs,BRP_Amp02.BR_IP_shufs,BRP_Amp1.BR_IP_shufs,pStruct);
 
     % Save
-    saveDir = 'F:\Research\Code\CA3 Region Code\Ripple Extension Model\RipExtend Figures V2\RipExtend_Noise\VoltageNoise_searches\';
+    saveDir = '';
     saveas(gaa,[saveDir,'FR_IMA_shufflesComp'],'fig')
     saveas(gaa,[saveDir,'FR_IMA_shufflesComp'],'svg')
     saveas(gab,[saveDir,'DR_IMA_shufflesComp'],'fig')

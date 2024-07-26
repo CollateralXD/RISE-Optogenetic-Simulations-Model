@@ -17,10 +17,11 @@ set(0,'DefaultLineLineWidth',2)
 N = size(aRamp,1);
 
 rc = autumn(N);
+gc = gray(N+3);
 if pStruct.rampTypeFlag == 'ctl'
     rampStr = 'Control Pyramidal';
     rc = cool(N);
-elseif pStruct.rampTypeFlag == 'sqr'
+elseif pStruct.rampTypeFlag == 0
     rampStr = 'Square Pyramidal';
 elseif pStruct.rampTypeFlag == 1
     rampStr = 'FR IMA Pyramidal';
@@ -32,20 +33,8 @@ elseif pStruct.rampTypeFlag == 4
     rampStr = 'DR IP Pyramidal';
 elseif pStruct.rampTypeFlag == 5
     rampStr = 'BR IMA Pyramidal';
-elseif pStruct.rampTypeFlag == 6
-    rampStr = 'Square IMA Pulsatile Pyramidal';
 elseif pStruct.rampTypeFlag == 7
     rampStr = 'BR IP Pyramidal';
-elseif pStruct.rampTypeFlag == 8
-    rampStr = 'Square IP Pulsatile Pyramidal';
-elseif pStruct.rampTypeFlag == 9
-    rampStr = 'Sinusoidal IMA Pyramidal';
-elseif pStruct.rampTypeFlag == 10
-    rampStr = 'Sinusoidal IP Pyramidal';
-elseif pStruct.rampTypeFlag == 11
-    rampStr = 'Poisson IMA Pyramidal';
-elseif pStruct.rampTypeFlag == 12
-    rampStr = 'Poisson IP Pyramidal';
 end
 
 %Plot activity
@@ -59,11 +48,14 @@ end
 
 for i = 1:N
     plot(aRamp(i,:),'Color',rc(i,:))
-    if i == 1; plot(ARamp(pStruct.cueN,:).*50-26.5,'k'); end
+%     if i == 1; plot(ARamp(pStruct.cueN,:).*50-26.5,'k'); end
+%     plot(ARamp(i,:).*50-26.5,'Color',gc(i,:))
 end
+plot(ARamp(1,:).*50-26.5,'k')
+
 plot([0 1000],[10 10],'k--');
 scatter(locsR,10*ones(1,length(locsR)),'k^','filled')
-ylim([-27 27]); % ylabel('Activation'); 
+ylim([-30 30]); % ylabel('Activation'); 
 xlim([0,1000]); % xlabel('Time (ms)');
 
 if pStruct.rampTypeFlag ~= 'ctl'

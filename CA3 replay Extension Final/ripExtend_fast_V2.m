@@ -49,6 +49,7 @@ ARamp(cueN,onsetDelay+1:onsetDelay+inDur1)   = Iexcit1;  %Start a ripple ramp
 AControl(cueN,onsetDelay+1:onsetDelay+inDur1)= Iexcit1;  %Start a ripple control
 
 % Setup afferent pulses
+squarea = Iexcit2*inDur2;     %Area under the square pulse
 if pStruct.rampTypeFlag == 1        %FR IMA
     ARamp(:,stimDelay+1:stimDelay+inDur2)  = Iexcit2;
     ARamp(:,stimDelay+1:stimDelay+rampLen)= repmat(linspace(0,Iexcit2,rampLen),[N,1]);   %Front Ramp
@@ -59,33 +60,71 @@ elseif pStruct.rampTypeFlag == 2    %DR IMA
 elseif pStruct.rampTypeFlag == 5    %BR IMA
     ARamp(:,stimDelay+1:stimDelay+inDur2)  = Iexcit2;
     ARamp(:,stimDelay+inDur2-rampLen+1:stimDelay+inDur2) = repmat(linspace(Iexcit2,0,rampLen),[N,1]);  %Rear ramp
-elseif pStruct.rampTypeFlag == 6    % Evenly spaced pulses
-    dutycycle = 0.4;
-    numPulse = 20;
-    period = inDur2 / numPulse;
-    pulseLength = period * dutycycle;
-    rampLength = floor(pStruct.tmpRamp * pulseLength);
-    for i = 1:numPulse
-        % Square
-        % ARamp(:,floor(stimDelay+(i-1)*period):floor(stimDelay+(i-1)*period+pulseLength)) = Iexcit2;
-
-        % FR IMA
-
-        pulseStart = floor(stimDelay + period * (i - 1));
-        pulseEnd = floor(pulseStart + pulseLength);
-        rampEnd = floor(pulseStart + rampLength);
-
-        ARamp(:,pulseStart:pulseEnd)  = Iexcit2;
-        % disp(linspace(0,Iexcit2,rampLen));
-        ARamp(:,pulseStart:rampEnd) = repmat(linspace(0,Iexcit2,rampEnd - pulseStart + 1),[N,1]);
-    end
-elseif pStruct.rampTypeFlag == 8 % Sinusoidal
-    % frequency = 30; % hz
+elseif pStruct.rampTypeFlag == 6    % Repeated Square Waves
     frequency = pStruct.tmpFrequency;
     period = 1000 / frequency;
-
-    ARamp(:,stimDelay+1:stimDelay+1+inDur2) = (sin(repmat(linspace(0,inDur2,inDur2 + 1)*2*pi/period, [N,1])) * Iexcit2 + Iexcit2) / 2;
-elseif pStruct.rampTypeFlag == 9 % Poisson Spike Train
+    dutyCycle = 0.5;       % Duty cycle of the square waves
+    pulseDuration = round(period * dutyCycle);
+    numPulses = floor(inDur2 / period);
+    for k = 0:numPulses-1
+        startIdx = stimDelay + k * period + 1;
+        endIdx = startIdx + pulseDuration - 1;
+        ARamp(:,startIdx:endIdx) = Iexcit2;
+    end
+elseif pStruct.rampTypeFlag == 8    % Iso-Power Repeated Square Waves
+    frequency = pStruct.tmpFrequency;
+    period = 1000 / frequency;
+    dutyCycle = 0.5;       % Duty cycle of the square waves
+    pulseDuration = round(period * dutyCycle);
+    numPulses = floor(inDur2 / period);
+    
+    % Calculate the new pulse amplitude to maintain the same total area
+    IRamp = squarea / (numPulses * pulseDuration);
+    
+    for k = 0:numPulses-1
+        startIdx = stimDelay + k * period + 1;
+        endIdx = startIdx + pulseDuration - 1;
+        ARamp(:,startIdx:endIdx) = IRamp;
+    end
+elseif pStruct.rampTypeFlag == 9    % Sinusoidal Waves with Same Max Amplitude as Square
+    frequency = pStruct.tmpFrequency;
+    period = 1000 / frequency;
+    numPulses = floor(inDur2 / period);
+    
+    % Generate time vector for one period
+    t = linspace(0, period, period + 1);
+    
+    % Calculate the sinusoidal wave with half max amplitude of Iexcit2
+    sinWave = (Iexcit2 / 2) * (sin(2 * pi * t / period - pi/2) + 1); % Sinusoid shifted up
+    
+    for k = 0:numPulses-1
+        startIdx = stimDelay + k * period;
+        endIdx = startIdx + period;
+        ARamp(:,startIdx:endIdx) = repmat(sinWave, N, 1);
+    end
+elseif pStruct.rampTypeFlag == 10    % Sinusoidal Waves with Same Area Under Curve as Square
+    frequency = pStruct.tmpFrequency;
+    period = 1000 / frequency;
+    numPulses = floor(inDur2 / period);
+    
+    % Generate time vector for one period
+    t = linspace(0, period, period + 1);
+    
+    % Calculate the area of one sinusoidal wave period (shifted up)
+    sinArea = trapz(t, sin(2 * pi * t / period - pi/2) + 1); % Shift the wave up so minimum is 0
+    
+    % Calculate the new amplitude to ensure the same total area
+    IRamp = squarea / (numPulses * sinArea);
+    
+    % Generate the sinusoidal wave with the adjusted amplitude
+    sinWave = IRamp * (sin(2 * pi * t / period - pi/2) + 1); % Adjust amplitude and shift up
+    
+    for k = 0:numPulses-1
+        startIdx = stimDelay + k * period;
+        endIdx = startIdx + period;
+        ARamp(:,startIdx:endIdx) = repmat(sinWave, N, 1);
+    end
+elseif pStruct.rampTypeFlag == 11 % Poisson Spike Train
     centerFrequency = 10;
     pulseDuration = 5;
     refractoryPeriod = 1;
@@ -95,12 +134,7 @@ elseif pStruct.rampTypeFlag == 9 % Poisson Spike Train
         n = max(n + poissrnd(centerFrequency), n+pulseDuration+refractoryPeriod);
         ARamp(:,stimDelay+n+1:stimDelay+1+n+pulseDuration)  = Iexcit2;
     end
-
 end
-
-
-
-squarea = Iexcit2*inDur2;     %Area under the square pulse
 if pStruct.rampTypeFlag == 3        %FR IP
     IRamp = squarea/(rampLen/2 + inDur2 - rampLen);  %Calculate Single Ramp Current Max for constant AUC
     ARamp(:,stimDelay+1:stimDelay+inDur2)  = IRamp;

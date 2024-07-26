@@ -32,20 +32,8 @@ elseif pStruct.rampTypeFlag == 4
     rampStr = 'DR IP Pyramidal';
 elseif pStruct.rampTypeFlag == 5
     rampStr = 'BR IMA Pyramidal';
-elseif pStruct.rampTypeFlag == 6
-    rampStr = 'Square IMA Pulsatile Pyramidal';
 elseif pStruct.rampTypeFlag == 7
     rampStr = 'BR IP Pyramidal';
-elseif pStruct.rampTypeFlag == 8
-    rampStr = 'Square IP Pulsatile Pyramidal';
-elseif pStruct.rampTypeFlag == 9
-    rampStr = 'Sinusoidal IMA Pyramidal';
-elseif pStruct.rampTypeFlag == 10
-    rampStr = 'Sinusoidal IP Pyramidal';
-elseif pStruct.rampTypeFlag == 11
-    rampStr = 'Poisson IMA Pyramidal';
-elseif pStruct.rampTypeFlag == 12
-    rampStr = 'Poisson IP Pyramidal';
 end
 
 %Plot activity

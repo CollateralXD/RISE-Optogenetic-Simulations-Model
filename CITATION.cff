@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using these metadata.
+title: Impact of Optogenetic Pulse Design on CA3 Learning 
+and Replay, a Neural Model
+abstract: Optogenetic manipulation of hippocampal circuitry is an important tool for investigating learning in vivo. Numerous approaches to pulse design have been employed to elicit desirable circuit and behavioral outcomes. We systematically tested the outcome of different single pulse waveforms in a rate-based model of hippocampal memory function at the level of mnemonic replay extension, and de novo synaptic weight formation in CA3 and CA1. Lower power waveforms with long forward or forward and backward ramps yielded more natural sequence replay dynamics and induced synaptic plasticity that allowed for more natural memory replay timing, in contrast to square or backward ramps. These differences between waveform shape and amplitude were preserved with the addition of noise in membrane potential, light scattering and protein expression, improving the potential validity of predictions for in vivo work. These results inform future optogenetic experimental design choices in the field of learning and memory.
+authors:
+  - family-names: Wilmerding, Yazdanbakhsh, Hasselmo
+    given-names: Lucius, Arash, Michael
+    orcid: "https://orcid.org/0000-0002-3201-5114"
+  - name: "The Research Software project"
+version: 1.0
+date-released: "2022-04-05"
+identifiers:
+  - description: This is the collection of archived snapshots of all versions of "Impact of Optogenetic Pulse Design on CA3 Learning "
+    type: doi
+    value: "10.5281/zenodo.6415338"
+license: MIT
+repository-code: "https://github.com/YesterdaySam/ComputationalWaveformMemory"

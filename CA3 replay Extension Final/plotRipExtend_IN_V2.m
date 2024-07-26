@@ -32,8 +32,20 @@ elseif pStruct.rampTypeFlag == 4
     rampStr = 'DR IP INs';
 elseif pStruct.rampTypeFlag == 5
     rampStr = 'BR IMA INs';
+elseif pStruct.rampTypeFlag == 6
+    rampStr = 'Square INs';
 elseif pStruct.rampTypeFlag == 7
-    rampStr = 'BR IP INs';
+    rampStr = 'BR IP INS';
+elseif pStruct.rampTypeFlag == 8
+    rampStr = 'Square IP Pulsatile INs';
+elseif pStruct.rampTypeFlag == 9
+    rampStr = 'Sinusoidal IMA INs';
+elseif pStruct.rampTypeFlag == 10
+    rampStr = 'Sinusoidal IP INs';
+elseif pStruct.rampTypeFlag == 11
+    rampStr = 'Poisson IMA INs';
+elseif pStruct.rampTypeFlag == 12
+    rampStr = 'Poisson IP INs';
 end
 
 %Plot activity

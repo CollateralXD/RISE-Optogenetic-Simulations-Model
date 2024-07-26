@@ -55,6 +55,7 @@ try
     dOutIN = computeCohen_d(rampINDeltas,ctlINDeltas,'independent');
 catch 
     dOut = NaN;
+    % dOutIN = NaN;
 end
 
 end

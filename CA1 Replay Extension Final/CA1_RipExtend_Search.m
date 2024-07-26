@@ -197,11 +197,11 @@ aaa.XTick = 1:round(nRamps-1)/5:nRamps;
 yticklabels(linspace(pLim,pFloor,6));
 % xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
 xticklabels(0:20:100);
-% xlabel('Ramp Percentage'); ylabel('Input Duration (ms)'); 
+xlabel('Ramp Percentage'); ylabel('Input Duration (ms)'); 
 colormap hot; axis square; hcb = colorbar;
-% if mod(pStruct.rampTypeFlag,2) == 1; title("Forward Ramp Opto vs Control");
-% else; title("Double Ramp Opto vs Control"); end
-% hcb.Label.String = "Cohen's d";
+if mod(pStruct.rampTypeFlag,2) == 1; title("Forward Ramp Opto vs Control");
+else; title("Double Ramp Opto vs Control"); end
+hcb.Label.String = "Cohen's d";
 set(aaa,'FontSize',24,'fontname','times')
 
 %Plot map of sequence lengths
@@ -212,9 +212,9 @@ aaz.XTick = 1:round(nRamps-1)/5:nRamps;
 yticklabels(linspace(pLim,pFloor,6));
 % xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
 xticklabels(0:20:100);
-% xlabel('Ramp Percentage'); ylabel('Input Duration (ms)'); 
+xlabel('Ramp Percentage'); ylabel('Input Duration (ms)'); 
 axis square; hcb = colorbar;
-% hcb.Label.String = "Sequence Length";
+hcb.Label.String = "Sequence Length";
 set(aaz,'FontSize',24,'fontname','times')
 
 % % Plot map of IN d-scores
@@ -281,6 +281,21 @@ ylabel('Mean Effect Size'); xlabel('2nd search parameter')
 
 %% Supplementary Graphs
 set(0,'DefaultLineLineWidth',2)
+
+
+
+% Afferent Input 3D plot code
+sqGhost = zeros(1,pStruct.T);
+sqGhost(pStruct.stimDelay+1:pStruct.stimDelay+pStruct.inDur2) = pStruct.Iexcit2;
+figure(); set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.28, 0.35, 0.45]); gaa = gca;
+w3 = waterfall(1:pStruct.T,1:N,ca3A); hold on;
+w3.LineWidth = 3;
+w3Sq = waterfall(1:pStruct.T,1,sqGhost);
+w3Sq.LineStyle = '--'; w3Sq.EdgeColor = 'r'; w3Sq.LineWidth = 2;
+xlabel('Time')
+gaa.YTick = 1:7:15;
+% ylabel('Node'); zlabel('Amplitude')
+set(gca,'FontSize',24,'fontname','times')
 
 if suppGraphFlag == 1
     

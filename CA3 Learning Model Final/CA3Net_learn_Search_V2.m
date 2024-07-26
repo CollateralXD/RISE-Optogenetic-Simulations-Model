@@ -12,7 +12,7 @@ clearvars
 close all
 load learnControl_adapt_sym_offAxis1_37.mat
 
-pStruct.rampTypeFlag    = 1;    %1 = FR IMA; 2 = DR IMA; 3 = FR IP; 4 = DR IP; 6 = BR IMA; 7 = BR IP
+pStruct.rampTypeFlag    = 4;    %1 = FR IMA; 2 = DR IMA; 3 = FR IP; 4 = DR IP; 6 = BR IMA; 7 = BR IP
 suppGraphFlag           = 0;    %Plot extra graphs or not
 pStruct.simTypeFlag     = 2;    %1 = Linear; 2 = Linear with Adaptation
 pStruct.noiseFlag       = 0;    %0 = no noise; 1 = White noise; 2 = 1/f or pink noise
@@ -82,8 +82,8 @@ for i = 1:N         %Build weight mats
     H(i,i)  = pStruct.Hh;   %Direct feedback IN to Pyr
     AH(i,i) = pStruct.Wh;   %Direct excitation pyr to IN
     if i <= N - 1   %Forward 1
-%         H(i,i+1)  = pStruct.Hh/hGain;   %IN  2 Pyr
-%         AH(i,i+1) = pStruct.Wh/ahGain;   %Pyr 2 IN
+        % H(i,i+1)  = pStruct.Hh/hGain;   %IN  2 Pyr
+        % AH(i,i+1) = pStruct.Wh/ahGain;   %Pyr 2 IN
     end
     if i <= N - 2   %Forward 2
 %         H(i,i+2)  = pStruct.Hh/hGain;   %IN  2 Pyr
@@ -201,17 +201,17 @@ for j = 1:nPs
         else
             [outputs.testPks{i,j},outputs.testLocs{i,j},outputs.diffs{i,j},outputs.INDiffs{i,j}] = ca3learn_stats(pStruct,actTmp,hactTmp);
             outputs.testN(i,j) = numel(outputs.testPks{i,j});
-            [outputs.Ds(i,j),~,~] = learn_CohenStats({actTmp{2},aControl},NaN,pStruct);
+            [outputs.Ds(i,j),~,~] = learn_CohenStats_V2({actTmp{2},aControl},NaN,pStruct);
         end
         %Calculate other outputs numbers
         if ~isempty(outputs.diffs{i,j})
             outputs.meanIThI(i,j) = mean(outputs.diffs{i,j});
-%             outputs.meanINIThI(i,j) = mean(outputs.INDiffs{i,j});
+            outputs.meanINIThI(i,j) = mean(outputs.INDiffs{i,j});
 %             outputs.sdIThI(i,j) = std(outputs.diffs{i,j});
 %             outputs.sdINIThI(i,j) = std(outputs.INDiffs{i,j});
         else
             outputs.meanIThI(i,j) = 0;
-%             outputs.meanINIThI(i,j) = 0;
+            outputs.meanINIThI(i,j) = 0;
         end
     end
 end
@@ -247,9 +247,10 @@ aaa.YTick = 1:round((nPs-1)/5):nPs;   %Reversed 0 at top, max at bottom
 aaa.XTick = 1:round(nRamps-1)/5:nRamps;
 if pLim == 1; yticklabels(linspace(pLim*100,0,6)); else yticklabels(linspace(pLim,0,6)); end
 xticklabels(0:20:100);
-% xlabel('Ramp Percentage'); ylabel('OL Duration (ms)'); 
+xlabel('Ramp Percentage'); ylabel('OL Duration (ms)'); 
 colormap hot; axis square; hcb = colorbar;
-% hcb.Label.String = "Cohen's d";
+
+hcb.Label.String = "Cohen's d";
 set(aaa,'FontSize',24,'fontname','times')
 
 %Plot map of sequence length
@@ -258,15 +259,15 @@ seqPlot = figure;  aaz = gca;
 imagesc(flipud(outputs.testN'),[0,N]);
 aaz.YTick = 1:round((nPs-1)/5):nPs; 
 aaz.XTick = 1:round(nRamps-1)/5:nRamps;
-% yticklabels(linspace(pLim,pFloor,6));
-% xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
+yticklabels(linspace(pLim,pFloor,6));
+%xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
 if pLim == 1; yticklabels(linspace(pLim*100,0,6)); else yticklabels(linspace(pLim,0,6)); end
 xticklabels(0:20:100);
-% xlabel('Ramp Percentage'); ylabel('Learn Overlap (ms)'); 
+xlabel('Ramp Percentage'); ylabel('Learn Overlap (ms)'); 
 colormap parula; axis square; hcb = colorbar;
-% if mod(pStruct.rampTypeFlag,2) == 1; title("Sequence Replay Length; Forward Ramp Learn");
-% else; title("Sequence Replay Length; Double Ramp Learn"); end
-% hcb.Label.String = "# Suprathreshold Test Nodes";
+if mod(pStruct.rampTypeFlag,2) == 1; title("Sequence Replay Length; Forward Ramp Learn");
+else; title("Sequence Replay Length; Double Ramp Learn"); end
+hcb.Label.String = "# Suprathreshold Test Nodes";
 set(aaz,'FontSize',24,'fontname','times')
 
 %% Shuffles
@@ -300,106 +301,108 @@ shufs.dnCIPrmD = shufs.meanPrmD - z*shufs.sdPrmD/sqrt(permN);
 shufs.upCIPrmN = shufs.meanPrmN + z*shufs.sdPrmN/sqrt(permN);
 shufs.dnCIPrmN = shufs.meanPrmN - z*shufs.sdPrmN/sqrt(permN);
 
-%% Supplementary Graphs
-% % Shuffles subplots
-% % figure(); % set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.35, 0.65]); 
-% figure(); set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.5, 0.8]);
-% subplot(2,2,1); aab = gca;
-% tmpMax = max(max(abs(outputs.meanIThI)));
-% axis square; hold on;
-% plot(rampPercs*100,shufs.meanPyrIThI,'k',rampPercs*100,upCIIThI,'k--')      %Plot Duration shuffle and upper CI
-% plot(rampPercs*100,dnCIIThI,'k--')
-% xlabel('Ramp Percentage'); ylabel("Mean IThI (ms)")
-% legend('OL Shuffle','99% CI');
-% ylim([0 tmpMax]); aab.XTick = linspace(0,max(rampPercs*100),6); xticklabels(0:20:100)
-% set(gca,'FontSize',24,'fontname','times')
-% subplot(2,2,2); aab = gca;
-% tmpMax = max(max(abs(outputs.meanIThI)));
-% axis square; hold on;
+% Supplementary Graphs
+% Shuffles subplots
+% figure(); % set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.35, 0.65]); 
+figure(); set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.5, 0.8]);
+subplot(2,2,1); aab = gca;
+tmpMax = max(max(abs(outputs.meanIThI)));
+axis square; hold on;
+plot(rampPercs*100,shufs.meanPyrIThI,'k',rampPercs*100,shufs.upCIIThI,'k--')      %Plot Duration shuffle and upper CI
+plot(rampPercs*100,shufs.dnCIIThI,'k--')
+xlabel('Ramp Percentage'); ylabel("Mean IThI (ms)")
+legend('OL Shuffle','99% CI');
+disp(tmpMax);
+ylim([0 max(tmpMax,1)]); aab.XTick = linspace(0,max(rampPercs*100),6); xticklabels(0:20:100)
+set(gca,'FontSize',24,'fontname','times')
+subplot(2,2,2); aab = gca;
+tmpMax = max(max(abs(outputs.meanIThI)));
+axis square; hold on;
 % plot(rampPercs*100,meanDShuf,'k',rampPercs*100,upCId,'k--')      %Plot Duration shuffle and upper CI
-% plot(rampPercs*100,dnCId,'k--')
-% xlabel('Ramp Percentage'); ylabel("Mean Effect Size (ms)")
-% ylim([0 3]);
-% aab.XTick = linspace(0,max(rampPercs*100),6); xticklabels(0:20:100);
-% set(gca,'FontSize',24,'fontname','times')
-% subplot(2,2,3); aac = gca;
-% tmpMax = max(max(abs(outputs.testN)));
-% axis square; hold on;
-% plot(rampPercs*100,meanActNShuf,'k',rampPercs*100,upCIN,'k--')      %Plot Duration shuffle and upper CI
-% plot(rampPercs*100,dnCIN,'k--')
-% xlabel('Ramp Percentage'); ylabel("Mean Suprathreshold Nodes")
-% legend('OL Shuffle','99% CI');
-% ylim([0 tmpMax]); aac.XTick = linspace(0,max(rampPercs*100),6); xticklabels(0:20:100)
-% set(gca,'FontSize',24,'fontname','times')
-% subplot(2,2,4); aad = gca;
-% axis square; hold on;
-% plot(rampPercs*100, bestSeqInds,'k-')
-% xlabel('Ramp Percentage'); ylabel('OL dur of Best Seq Length');
-% ylim([-10 80]);
-% set(gca,'FontSize',24,'fontname','times')
+plot(rampPercs*100,shufs.dnCId,'k--')
+xlabel('Ramp Percentage'); ylabel("Mean Effect Size (ms)")
+ylim([0 3]);
+aab.XTick = linspace(0,max(rampPercs*100),6); xticklabels(0:20:100);
+set(gca,'FontSize',24,'fontname','times')
+subplot(2,2,3); aac = gca;
+tmpMax = max(max(abs(outputs.testN)));
+axis square; hold on;
+plot(rampPercs*100,shufs.meanActN,'k',rampPercs*100,shufs.upCIN,'k--')      %Plot Duration shuffle and upper CI
+plot(rampPercs*100,shufs.dnCIN,'k--')
+xlabel('Ramp Percentage'); ylabel("Mean Suprathreshold Nodes")
+legend('OL Shuffle','99% CI');
+ylim([0 max(1,tmpMax)]); aac.XTick = linspace(0,max(rampPercs*100),6); xticklabels(0:20:100)
+set(gca,'FontSize',24,'fontname','times')
+subplot(2,2,4); aad = gca;
+axis square; hold on;
+plot(rampPercs*100, bestSeqInds,'k-')
+xlabel('Ramp Percentage'); ylabel('OL dur of Best Seq Length');
+ylim([-10 80]);
+set(gca,'FontSize',24,'fontname','times')
 
-% % Plot map of pyramidal mean IthI
-% pyrPlot = figure;  aaa = gca;
-% % set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.5, 0.8]);
-% imagesc(flipud(outputs.meanIThI'),[0,max(max(outputs.meanIThI))]);
-% aaa.YTick = 1:round((nPs-1)/5):nPs; 
-% aaa.XTick = 1:round(nRamps-1)/5:nRamps;
-% % yticklabels(linspace(pLim,pFloor,6));
-% % xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
-% yticklabels(linspace(100,0,6))
-% xticklabels(0:20:100);
-% % xlabel('Ramp Percentage'); ylabel('Learn Overlap (ms)'); 
-% colormap jet; axis square; hcb = colorbar;
-% % if mod(pStruct.rampTypeFlag,2) == 1; title("Replay Mean Pyr IThI; Forward Ramp Learn");
-% % else; title("Replay Mean Pyr IThI; Double Ramp Learn"); end
-% % hcb.Label.String = "Mean Pyr IThI";
-% set(aaa,'FontSize',24,'fontname','times')
-
-% % Plot map of IN mean IthI
-% INPlot = figure; aaa = gca;
-% % set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.5, 0.8]);
-% imagesc(flipud(outputs.meanINIThI'),[0,max(max(outputs.meanINIThI))]);
-% aaa.YTick = 1:round((nPs-1)/5):nPs; 
-% aaa.XTick = 1:round(nRamps-1)/5:nRamps;
+% Plot map of pyramidal mean IthI
+pyrPlot = figure;  aaa = gca;
+% set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.5, 0.8]);
+imagesc(flipud(outputs.meanIThI'),[0,max(max(outputs.meanIThI))]);
+aaa.YTick = 1:round((nPs-1)/5):nPs; 
+aaa.XTick = 1:round(nRamps-1)/5:nRamps;
 % yticklabels(linspace(pLim,pFloor,6));
 % xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
-% % xlabel('Ramp Percentage'); 
-% % ylabel('Learn Overlap (ms)'); 
-% colormap jet; axis square; hcb = colorbar;
-% % if mod(pStruct.rampTypeFlag,2) == 1; title("Replay Mean IN IThI; Forward Ramp Learn");
-% % else; title("Replay Mean IN IThI; Double Ramp Learn"); end
-% % hcb.Label.String = "Mean IN IThI";
-% set(aaa,'FontSize',24,'fontname','times')
+yticklabels(linspace(100,0,6))
+xticklabels(0:20:100);
+xlabel('Ramp Percentage'); ylabel('Learn Overlap (ms)'); 
+colormap jet; axis square; hcb = colorbar;
+if mod(pStruct.rampTypeFlag,2) == 1; title("Replay Mean Pyr IThI; Forward Ramp Learn");
+else; title("Replay Mean Pyr IThI; Double Ramp Learn"); end
+hcb.Label.String = "Mean Pyr IThI";
+set(aaa,'FontSize',24,'fontname','times')
 
-% %Plot Weights
-% figure(); set(gcf, 'Colormap', jet) % tightfig();
-% set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.5, 0.75, 0.5]);
-% subplot(1,3,1)
-% imagesc(W); title('Pyr-Pyr Weight (W)');    axis square
-% xlabel('Post-Synaptic Pyr'); ylabel('Pre-Synaptic Pyr')
-% set(gca,'FontSize',20)
-% subplot(1,3,2)
-% imagesc(AH); title("Pyr-IN Weight (W')");   axis square
-% xlabel('Post-Synaptic IN'); ylabel('Pre-Synaptic Pyr')
-% set(gca,'FontSize',20)
-% subplot(1,3,3)
-% imagesc(H); title('IN-Pyr Weight (H)');     axis square
-% xlabel('Post-Synaptic Pyr'); ylabel('Pre-Synaptic IN')
-% set(gca,'FontSize',20)
+% Plot map of IN mean IthI
+INPlot = figure; aaa = gca;
+% set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.5, 0.8]);
+imagesc(flipud(outputs.meanINIThI'),[0,max(max(outputs.meanINIThI))]);
+aaa.YTick = 1:round((nPs-1)/5):nPs; 
+aaa.XTick = 1:round(nRamps-1)/5:nRamps;
+yticklabels(linspace(pLim,pFloor,6));
+xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
+% xlabel('Ramp Percentage'); 
+% ylabel('Learn Overlap (ms)'); 
+colormap jet; axis square; hcb = colorbar;
+% if mod(pStruct.rampTypeFlag,2) == 1; title("Replay Mean IN IThI; Forward Ramp Learn");
+% else; title("Replay Mean IN IThI; Double Ramp Learn"); end
+% hcb.Label.String = "Mean IN IThI";
+set(aaa,'FontSize',24,'fontname','times')
 
-% % Afferent 3D plot code
-% sqGhost = zeros(1,pStruct.TLearn);
-% sqGhost(pStruct.onsetDelay+1:pStruct.onsetDelay+pStruct.learnDur) = pStruct.Iexcit1;
-% figure(); set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.28, 0.35, 0.45]); gaa = gca;
-% w3 = waterfall(1:pStruct.TLearn,1:N,ALearn); hold on;
-% w3.LineWidth = 3;
-% w3Sq = waterfall(1:pStruct.TLearn,1,sqGhost);
-% w3Sq.LineStyle = '--'; w3Sq.EdgeColor = 'r'; w3Sq.LineWidth = 2;
-% gaa.YTick = 1:7:15;
-% zlim([0 1]); xlim([0 1200])
-% xlabel('Time'); ylabel('Node','position',[-148.7513525348877,6.348030863114843,-0.099984467105344]); zlabel('Amplitude')
-% view([-13.2608328513592 45.9028169014085]);
-% set(gca,'FontSize',24,'fontname','times')
+%Plot Weights
+figure(); set(gcf, 'Colormap', jet) % tightfig();
+set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.5, 0.75, 0.5]);
+subplot(1,3,1);
+disp(size(W(:,:,1))); %Originally just W but that caused errors. This isn't right, but at least it does something
+imagesc(W(:,:,1)); title('Pyr-Pyr Weight (W)');    axis square
+xlabel('Post-Synaptic Pyr'); ylabel('Pre-Synaptic Pyr')
+set(gca,'FontSize',20)
+subplot(1,3,2)
+imagesc(AH); title("Pyr-IN Weight (W')");   axis square
+xlabel('Post-Synaptic IN'); ylabel('Pre-Synaptic Pyr')
+set(gca,'FontSize',20)
+subplot(1,3,3)
+imagesc(H); title('IN-Pyr Weight (H)');     axis square
+xlabel('Post-Synaptic Pyr'); ylabel('Pre-Synaptic IN')
+set(gca,'FontSize',20)
+
+% Afferent 3D plot code
+sqGhost = zeros(1,pStruct.TLearn);
+sqGhost(pStruct.onsetDelay+1:pStruct.onsetDelay+pStruct.learnDur) = pStruct.Iexcit1;
+figure(); set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.28, 0.35, 0.45]); gaa = gca;
+w3 = waterfall(1:pStruct.TLearn,1:N,ALearn); hold on;
+w3.LineWidth = 3;
+w3Sq = waterfall(1:pStruct.TLearn,1,sqGhost);
+w3Sq.LineStyle = '--'; w3Sq.EdgeColor = 'r'; w3Sq.LineWidth = 2;
+gaa.YTick = 1:7:15;
+zlim([0 1]); xlim([0 1200])
+xlabel('Time'); ylabel('Node','position',[-148.7513525348877,6.348030863114843,-0.099984467105344]); zlabel('Amplitude')
+view([-13.2608328513592 45.9028169014085]);
+set(gca,'FontSize',24,'fontname','times')
 
 if suppGraphFlag == 1
 %     load('C:\Users\Kvothe\Documents\Research\Code\CA3 Region Code\Pattern Learning Model\learnVars\DRC_sumStats_wtBiasOff_offAxis1_7.mat')
@@ -691,5 +694,3 @@ for i = 1:nRamps
 end
 bestNLocs = indMat(bestNInds);
 end
-
-

@@ -10,8 +10,8 @@
 % close all
 
 
-pStruct.rampTypeFlag        = 9;        %1 = FR IMA; 2 = DR IMA; 3 = FR IP; 4 = DR IP; 5 = BR IMA; 7 = BR IP; 8 = Square Pulsatile IP; 9 = Sinusoidal IMA; 10; Sinusoidal IP;
 %6 — evenly spaced pulsatile, %8 — sinusoidal
+pStruct.rampTypeFlag = 12;
 pStruct.simTypeFlag         = 2;        %1 = Linear; 2 = Linear with Adaptation
 pStruct.noiseFlag           = 0;        %0 = no noise; 1 = White noise; 2 = ChR2 Noise; 3 = Distance noise; 4 = Combined all noise
 saveFlag                    = 0;
@@ -37,8 +37,8 @@ pStruct.cueN                = 1;
 pStruct.Iexcit1             = 1;                %Cue pulse strength
 pStruct.Iexcit2             = 0.09;             %Opto pulse strength
 pStruct.inDur1              = 20;               %Duration for cue
-% pStruct.inDur2              = 100;              %Opto pulse duration
-pStruct.inDur2              = 300;              %Opto pulse duration
+pStruct.inDur2              = 100;              %Opto pulse duration
+% pStruct.inDur2              = 150;              %Opto pulse duration
 
 pStruct.rampLen             = 0.5*pStruct.inDur2;  %Duration ramp length e.g. 0.0 to 1.0
 pStruct.onsetDelay          = 50;               %Wait time to ripple start from sim start
@@ -102,9 +102,21 @@ pVect                   = linspace(pFloor,pLim,nPs);    %Vector of parameter val
 if mod(pStruct.rampTypeFlag,2) == 1; rampLim = 1; else; rampLim = 0.5; end %Set ramp limit to 1 or 0.5 depending on flag
 rampPercs = linspace(0,rampLim,nRamps);
 
-frequencyLim = 150;
-nFrequency = 150;
-frequencyPercs = linspace(1,frequencyLim,nFrequency);
+%6, 8, 9, 10
+frequencyFloor = 1;
+frequencyLim = 100;
+nFrequency = 100;
+frequencyPercs = linspace(frequencyFloor,frequencyLim,nFrequency);
+%12, 13
+nAmpRatio = 50;
+ampRatioLower = 1/nAmpRatio;
+ampRatioUpper = 1-(1/nAmpRatio);
+ampRatioPercs = linspace(1/nAmpRatio, 1-(1/nAmpRatio), nAmpRatio);
+
+nFreqRatio = 50;
+freqRatioLower = 0;
+freqRatioUpper = 2;
+freqRatioPercs = linspace(freqRatioLower, freqRatioUpper, nFreqRatio);
 
 outputs.ds          = zeros(nRamps,nPs);
 outputs.cs          = cell(nRamps,nPs);
@@ -114,6 +126,8 @@ outputs.Ns          = zeros(nRamps,nPs);
 
 %% Gut check above parameters
 pStruct.tmpFrequency = 30;
+pStruct.ampRatio = 0.9;
+pStruct.freqRatio = 5;
 [actCell,hactCell,inCell] = ripExtend_fast_V2(pStruct);    %Using ramp defined above
 aRamp = actCell{1}; aControl = actCell{2};
 hRamp = hactCell{1};hControl = hactCell{2};
@@ -167,14 +181,47 @@ for i = 1:2
 end
 
 %% Run Block
-for i = 1:nRamps
-    pStruct.tmpRamp = rampPercs(i);         %Define ramp percentage
-    pStruct.tmpFrequency = frequencyPercs(i);
-    for j = 1:nPs
-        pStruct.inDur2      = pVect(j); 	  %2nd search param: inDur
-%         pStruct.noiseSigma  = pVect(j);     %2nd search param: noiseSigma of ChR2 expression
-%         pStruct.noiseAmp    = pVect(j);     %2nd search param: amplitude of voltage noise
-%         pStruct.stimDelay   = pVect(j) + pStruct.onsetDelay + pStruct.inDur1; %2nd search param: stimDelay
+bound1 = nRamps;
+bound2 = nPs;
+xAxis = "Ramp Percentage";
+xAxisLowerBound = 0;
+xAxisUpperBound = rampLim;
+yAxis = "Pulse Duration (ms)";
+yAxisLowerBound = pFloor;
+yAxisUpperBound = pLim;
+percs1 = rampPercs;
+percs2 = pVect;
+if (pStruct.rampTypeFlag == 6 || pStruct.rampTypeFlag == 8 || pStruct.rampTypeFlag == 9 || pStruct.rampTypeFlag == 10)
+    bound1 = nFrequency;
+    xAxis = "Frequency (hz)";
+    xAxisLowerBound = frequencyFloor;
+    xAxisUpperBound = frequencyLim;
+    percs1 = frequencyPercs;
+elseif (pStruct.rampTypeFlag == 12 || pStruct.rampTypeFlag == 13)
+    bound1 = nAmpRatio;
+    bound2 = nFreqRatio;
+    xAxis = "Amplitude Ratio";
+    xAxisLowerBound = ampRatioLower;
+    xAxisUpperBound = ampRatioUpper;
+    yAxis = "Frequency Ratio";
+    xAxisLowerBound = freqRatioLower;
+    xAxisUpperBound = freqRatioUpper;
+    percs1 = ampRatioPercs;
+    percs2 = freqRatioPercs;
+end
+
+
+
+for i = 1:bound1
+        pStruct.tmpFrequency = percs1(i);
+        pStruct.ampRatio = percs1(i);
+        pStruct.tmpRamp = percs1(i);         %Define ramp percentage
+    for j = 1:bound2
+        % Vary 
+        pStruct.freqRatio = percs2(j);
+        % pStruct.tmpRamp = percs2(j);         %Define ramp percentage
+        % pStruct.inDur2 = percs2(j);
+
         pStruct.rampLen     = round(pStruct.tmpRamp*pStruct.inDur2);   %Define ramp length
         %Run function
         [actTmp,hactTmp,inTmp] = ripExtend_fast_V2(pStruct);     %Run simulation
@@ -205,6 +252,7 @@ minDs = min(flipud(outputs.dsNanCor'));    %Calculate minimum effect size
 % cbMax = tmpMax;
 % cbMax = max(max(outputs.dsNanCor));
 cbMax = 5;
+
 %% Plotting of Heatmaps
 
 %Plot map of d-scores
@@ -212,11 +260,29 @@ figure; set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.35, 0.65])
 
 % COHEN'S D
 imagesc(flipud(outputs.dsNanCor'),[0,cbMax]); % All Nan set to tmpmax
-aaa.YTick = 1:round((nPs-1)/5):nPs;   %Reversed 0 at top, max at bottom
-yticklabels(linspace(pLim,pFloor,6));
 
-aaa.XTick = 1:round(nRamps-1)/5:nRamps;
-xticklabels(0:20:100);
+aaa.YTick = yAxisLowerBound:yAxisUpperBound:length(percs2);
+yticklabels(linspace(yAxisLowerBound,yAxisUpperBound,10))
+aaa.XTick = xAxisLowerBound:xAxisUpperBound:length(percs1);
+xticklabels(linspace(xAxisLowerBound,xAxisUpperBound,10))
+% if (ismember([12,13],pStruct.rampTypeFlag))
+    % aaa.YTick = 0:nFreqRatio:nFreqRatio;
+    % yticklabels(linspace(freqRatioLower,freqRatioUpper,10));
+    % aaa.XTick = 0:1:10;
+    % xticklabels(0:0.1:1);
+% 
+%     aaa.YTick = 1:round((nPs-1)/5):nPs;   %Reversed 0 at top, max at bottom
+% 
+%     yticklabels(linspace(pLim,pFloor,6));
+%     aaa.XTick = 1:round(nRamps-1)/5:nRamps;
+%     xticklabels(0:10:100);
+% 
+% else
+%     aaa.YTick = 1:round((nPs-1)/5):nPs;   %Reversed 0 at top, max at bottom
+%     yticklabels(linspace(pLim,pFloor,6));
+%     aaa.XTick = 1:round(nRamps-1)/5:nRamps;
+%     xticklabels(0:20:100);
+% end
 
 % % xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
 % if pStruct.rampTypeFlag == 8
@@ -226,7 +292,8 @@ xticklabels(0:20:100);
 %     aaa.XTick = 1:round(nRamps-1)/5:nRamps;
 %     xticklabels(0:20:100);
 % end
-xlabel('Ramp Percentage'); ylabel('Input Duration (ms)'); 
+% xlabel('Ramp Percentage'); ylabel('Input Duration (ms)'); 
+xlabel(xAxis); ylabel(yAxis); 
 colormap hot; axis square; hcb = colorbar;
 % if mod(pStruct.rampTypeFlag,2) == 1; title("Forward Ramp Opto vs Control");
 % else; title("Double Ramp Opto vs Control"); end
@@ -245,7 +312,8 @@ yticklabels(linspace(pLim,pFloor,6));
 
 % xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
 xticklabels(0:20:100);
-xlabel('Ramp Percentage'); ylabel('Input Duration (ms)'); 
+% xlabel('Ramp Percentage'); ylabel('Input Duration (ms)'); 
+xlabel(xAxis); ylabel(yAxis); 
 axis square; hcb = colorbar;
 hcb.Label.String = "Sequence Length";
 set(aaz,'FontSize',24,'fontname','times')
@@ -260,8 +328,9 @@ aax.YTick = 1:round((nPs-1)/5):nPs;
 aax.XTick = 1:round(nRamps-1)/5:nRamps;
 yticklabels(linspace(pLim,pFloor,6));
 xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
-xlabel('Ramp Percentage'); 
-ylabel('Learn Overlap (ms)'); 
+% xlabel('Ramp Percentage'); 
+% ylabel('Learn Overlap (ms)');
+xlabel(xAxis); ylabel(yAxis); 
 colormap cool; axis square; hcb = colorbar;
 set(aax,'FontSize',24,'fontname','times')
 
@@ -300,8 +369,8 @@ shuf.dnCIrmpSeq = shuf.rmpSeqShuf - z*shuf.sdRmpSeqShuffle/sqrt(permN);
 rVect = rampPercs*100;
 figure; set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.35, 0.65]); ccb = gca;
 hold on;
-plot(rVect,shuf.durShuf,'k',rVect,shuf.upCIdur,'k--',rVect,shuf.dnCIdur,'k--')
-plot(rVect,shuf.INShuf,'r',rVect,shuf.upCIIN,'r--',rVect,shuf.dnCIIN,'r--')
+% plot(rVect,shuf.durShuf,'k',rVect,shuf.upCIdur,'k--',rVect,shuf.dnCIdur,'k--')
+% plot(rVect,shuf.INShuf,'r',rVect,shuf.upCIIN,'r--',rVect,shuf.dnCIIN,'r--')
 % plot(pVect,shuf.rmpShuf,'b',pVect,shuf.upCIrmp,'b--',pVect,shuf.dnCIrmp,'b--')
 % plot(pVect,shuf.rmpSeqShuf,'c',pVect,shuf.upCIrmpSeq,'c--',pVect,shuf.dnCIrmpSeq,'c--')
 % plot(rVect,shuf.seqShuf,'b',rVect,shuf.upCIseq,'b--',rVect,shuf.dnCIseq,'b--')

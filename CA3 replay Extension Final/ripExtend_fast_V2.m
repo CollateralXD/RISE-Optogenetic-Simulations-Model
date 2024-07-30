@@ -96,7 +96,7 @@ elseif pStruct.rampTypeFlag == 9    % Sinusoidal Waves with Same Max Amplitude a
     
     % Calculate the sinusoidal wave with half max amplitude of Iexcit2
     sinWave = (Iexcit2 / 2) * (sin(2 * pi * t / period - pi/2) + 1); % Sinusoid shifted up
-    
+
     for k = 0:numPulses-1
         startIdx = stimDelay + k * period;
         endIdx = startIdx + period;
@@ -134,6 +134,55 @@ elseif pStruct.rampTypeFlag == 11 % Poisson Spike Train
         n = max(n + poissrnd(centerFrequency), n+pulseDuration+refractoryPeriod);
         ARamp(:,stimDelay+n+1:stimDelay+1+n+pulseDuration)  = Iexcit2;
     end
+elseif pStruct.rampTypeFlag == 12 % Double sinusoidal with fixed area under curve
+    ratio = pStruct.ampRatio;
+    % ratio = 0.5;
+
+    frequency1 = 10; % Fixed; hertz
+    frequency2 = frequency1 * pStruct.freqRatio;
+
+    amplitude1 = Iexcit2 / 2 * 1 / (1 + ratio);
+    amplitude2 = Iexcit2 / 2 * ratio / (1 + ratio); % So that amplitude1 + amplitude2 = Iexcit2 bc maxAmplitude is fixed
+
+    period1 = floor(1000 / frequency1);
+    period2 = floor(1000 / frequency2);
+    
+    % Generate time vector for one period
+    t = linspace(0, inDur2, inDur2 + 1);
+    
+    % Calculate the sinusoidal wave with half max amplitude of Iexcit2
+    sin1 = (amplitude1 / 2) * (sin(2 * pi * t * frequency1 / 1000 - pi/2) + 1); % Sinusoid shifted up
+    sin2 = (amplitude2 / 2) * (sin(2 * pi * t * frequency2 / 1000 - pi/2) + 1); % Sinusoid shifted up
+    
+    combined = sin1 + sin2;
+    combinedArea = trapz(combined);
+    combined = combined / combinedArea * squarea;
+    
+    ARamp(:,stimDelay:stimDelay+inDur2) = repmat(combined, N, 1);
+elseif pStruct.rampTypeFlag == 13 % Double sinusoidal with fixed maxAmplitude
+    ratio = pStruct.ampRatio;
+    % ratio = 0.5;
+
+    frequency1 = 10; % Fixed; hertz
+    frequency2 = frequency1 * pStruct.freqRatio;
+
+    amplitude1 = Iexcit2 / 2 * 1 / (1 + ratio);
+    amplitude2 = Iexcit2 / 2 * ratio / (1 + ratio); % So that amplitude1 + amplitude2 = Iexcit2 bc maxAmplitude is fixed
+
+    period1 = floor(1000 / frequency1);
+    period2 = floor(1000 / frequency2);
+    
+    % Generate time vector for one period
+    t = linspace(0, inDur2, inDur2 + 1);
+    
+    % Calculate the sinusoidal wave with half max amplitude of Iexcit2
+    sin1 = (amplitude1 / 2) * (sin(2 * pi * t * frequency1 / 1000 - pi/2) + 1); % Sinusoid shifted up
+    sin2 = (amplitude2 / 2) * (sin(2 * pi * t * frequency2 / 1000 - pi/2) + 1); % Sinusoid shifted up
+    
+    combined = sin1 + sin2;
+    
+    ARamp(:,stimDelay:stimDelay+inDur2) = repmat(combined, N, 1);
+
 end
 if pStruct.rampTypeFlag == 3        %FR IP
     IRamp = squarea/(rampLen/2 + inDur2 - rampLen);  %Calculate Single Ramp Current Max for constant AUC

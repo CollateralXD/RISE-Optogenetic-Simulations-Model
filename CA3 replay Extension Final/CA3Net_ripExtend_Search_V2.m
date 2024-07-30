@@ -212,6 +212,7 @@ elseif (pStruct.rampTypeFlag == 12 || pStruct.rampTypeFlag == 13)
 end
 
 
+pStruct.inDur2 = 100;
 
 for i = 1:bound1
         pStruct.tmpFrequency = percs1(i);
@@ -282,6 +283,7 @@ xticks(linspace(0, length(percs1), 10));
 xticklabels(linspace(xAxisLowerBound,xAxisUpperBound,10));
 yticks(linspace(0, length(percs2), 10));
 yticklabels(linspace(yAxisLowerBound,yAxisUpperBound,10));
+xlabel(xAxis); ylabel(yAxis); 
 axis square; hcb = colorbar;
 hcb.Label.String = "Sequence Length";
 set(aaz,'FontSize',24,'fontname','times')

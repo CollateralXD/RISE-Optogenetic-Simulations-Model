@@ -1,7 +1,7 @@
 %%% Sample code for Replay Extension Model
 %LKW 8/2/21
 %Relies on ripExtend_fast_V2.m and ripExtend_CohenStats.m
-%Searches ripple prolongation parameter space in dimensions of ramp degree
+%Searches ripple prolongation parameter space in dimensions of ramp degree 
 %and input pulse duration
 %Plots various metrics and statistics for evaluating network performance
 %under varying waveform shape input
@@ -11,7 +11,7 @@
 
 
 %6 — evenly spaced pulsatile, %8 — sinusoidal
-pStruct.rampTypeFlag = 12;
+pStruct.rampTypeFlag = 6;
 pStruct.simTypeFlag         = 2;        %1 = Linear; 2 = Linear with Adaptation
 pStruct.noiseFlag           = 0;        %0 = no noise; 1 = White noise; 2 = ChR2 Noise; 3 = Distance noise; 4 = Combined all noise
 saveFlag                    = 0;

@@ -11,11 +11,11 @@
 
 
 %6 — evenly spaced pulsatile, %8 — sinusoidal
-pStruct.rampTypeFlag = 11;
+pStruct.rampTypeFlag = 13;
 pStruct.simTypeFlag         = 2;        %1 = Linear; 2 = Linear with Adaptation
 pStruct.noiseFlag           = 0;        %0 = no noise; 1 = White noise; 2 = ChR2 Noise; 3 = Distance noise; 4 = Combined all noise
 saveFlag                    = 0;
-saveDir = '/YourDirHere\';
+saveDir = '';
 suppGraphFlag               = 0;
 disp(['Ramp Type ', num2str(pStruct.rampTypeFlag),'; Sim Type ', num2str(pStruct.simTypeFlag), '; Noise type ', num2str(pStruct.noiseFlag)]);
 

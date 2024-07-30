@@ -125,21 +125,46 @@ elseif pStruct.rampTypeFlag == 10    % Sinusoidal Waves with Same Area Under Cur
         ARamp(:,startIdx:endIdx) = repmat(sinWave, N, 1);
     end
 elseif pStruct.rampTypeFlag == 11 % Poisson Spike Train
-    centerFrequency = pStruct.tmpFrequency;
+    lambda = 5;
     pulseDuration = 5;
-    refractoryPeriod = 1;
+    refractoryPeriod = 2;
 
-    n = 1;
-    nPulses = 0;
+    n = 0;
     while n < inDur2
-        n = max(n + poissrnd(centerFrequency), n+pulseDuration+refractoryPeriod);
-        ARamp(:,stimDelay+n+1:stimDelay+1+n+pulseDuration)  = Iexcit2;
-        nPulses = nPulses + 1;
+        n = n + max(poissrnd(lambda), refractoryPeriod);
+        ARamp(:,stimDelay+n:stimDelay+n+pulseDuration)  = Iexcit2;
+        n = n + pulseDuration
+    end
+elseif pStruct.rampTypeFlag == 12    % Iso-Power Poisson Spike Train
+    lambda = 5;    % Center frequency of the Poisson distribution (5-42 Hz)
+    pulseDuration = 5;       % Pulse width in milliseconds (2-10 ms)
+    refractoryPeriod = 2;
+    % Initialize variables
+    n = 0;                   % Start time
+    pulseTimes = [];
+
+    % Generate Poisson spike times
+     while n < inDur2
+        n = n + max(poissrnd(lambda), refractoryPeriod);
+        pulseTimes = [pulseTimes, n];  % Store the pulse start time
+        n = n + pulseDuration;
     end
 
-    a = nPulses * Iexcit2 * pulseDuration;
-    ARamp(:,stimDelay:stimDelay+inDur2) = ARamp(:,stimDelay:stimDelay+inDur2) * squarea / a;
-elseif pStruct.rampTypeFlag == 12 % Double sinusoidal with fixed area under curve
+    % Calculate the required pulse amplitude to match the total area
+    numPulses = length(pulseTimes);
+    squareArea = Iexcit2 * inDur2;  % Total area under the square pulse
+    pulseArea = pulseDuration * numPulses;  % Total duration of all pulses
+    IRamp = squareArea / pulseArea;  % Adjusted amplitude to match total area
+
+    % Apply pulses to ARamp
+    for k = 1:numPulses
+        startIdx = stimDelay + pulseTimes(k);  % +1 to convert to 1-based index
+        endIdx = startIdx + pulseDuration;
+        if endIdx <= T
+            ARamp(:, startIdx:endIdx) = IRamp;  % Apply adjusted amplitude
+        end
+    end
+elseif pStruct.rampTypeFlag == 13 % Double sinusoidal with fixed area under curve
     ratio = pStruct.ampRatio;
     % ratio = 0.5;
 
@@ -164,7 +189,7 @@ elseif pStruct.rampTypeFlag == 12 % Double sinusoidal with fixed area under curv
     combined = combined / combinedArea * squarea;
     
     ARamp(:,stimDelay:stimDelay+inDur2) = repmat(combined, N, 1);
-elseif pStruct.rampTypeFlag == 13 % Double sinusoidal with fixed maxAmplitude
+elseif pStruct.rampTypeFlag == 14 % Double sinusoidal with fixed maxAmplitude
     ratio = pStruct.ampRatio;
     % ratio = 0.5;
 

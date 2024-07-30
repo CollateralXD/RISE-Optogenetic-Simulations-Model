@@ -11,7 +11,7 @@ clearvars
 close all
 % rng(1)                          %For reproducibility of stochastic simulations
 
-rampTypeFlag        = 11;        %'ctl' = no 2nd pulse; 1 = FR IMA; 2 = DR IMA; 3 = FR IP; 4 = DR IP; 5 = BR IMA; 6 = Square Pulsatile IMA; 7 = BR IP; 8 = Square Pulsatile IP; 9 = Sinusoidal IMA; 10; Sinusoidal IP
+rampTypeFlag        = 12;        %'ctl' = no 2nd pulse; 1 = FR IMA; 2 = DR IMA; 3 = FR IP; 4 = DR IP; 5 = BR IMA; 6 = Square Pulsatile IMA; 7 = BR IP; 8 = Square Pulsatile IP; 9 = Sinusoidal IMA; 10; Sinusoidal IP
 simTypeFlag         = 2;        %1 = Linear; 2 = Linear with Adaptation
 noiseFlag           = 0;        %0 = no noise; 1 = Voltage noise; 2 = Opsin Noise; 3 = Light Scattering noise; 4 = All noise
 disp(['Ramp Type ', num2str(rampTypeFlag),'; Sim Type ', num2str(simTypeFlag), '; Noise type ', num2str(noiseFlag)]);
@@ -196,16 +196,48 @@ elseif rampTypeFlag == 10    % Sinusoidal Waves with Same Area Under Curve as Sq
         ARamp(:,startIdx:endIdx) = repmat(sinWave, N, 1);
     end
 elseif rampTypeFlag == 11 % Poisson Spike Train
-    centerFrequency = 10;
+    lambda = 5;
     pulseDuration = 5;
-    refractoryPeriod = 1;
+    refractoryPeriod = 2;
 
-    n = 1;
+    n = 0;
     while n < inDur2
-        n = max(n + poissrnd(centerFrequency), n+pulseDuration+refractoryPeriod);
-        ARamp(:,stimDelay+n+1:stimDelay+1+n+pulseDuration)  = Iexcit2;
+        n = n + max(poissrnd(lambda), refractoryPeriod);
+        ARamp(:,stimDelay+n:stimDelay+n+pulseDuration)  = Iexcit2;
+        n = n + pulseDuration
+    end
+elseif rampTypeFlag == 12    % Iso-Power Poisson Spike Train
+    lambda = 5;    % Center frequency of the Poisson distribution (5-42 Hz)
+    pulseDuration = 5;       % Pulse width in milliseconds (2-10 ms)
+    refractoryPeriod = 2;
+    % Initialize variables
+    n = 0;                   % Start time
+    pulseTimes = [];
+
+    % Generate Poisson spike times
+     while n < inDur2
+        n = n + max(poissrnd(lambda), refractoryPeriod);
+        pulseTimes = [pulseTimes, n];  % Store the pulse start time
+        n = n + pulseDuration;
+    end
+
+    % Calculate the required pulse amplitude to match the total area
+    numPulses = length(pulseTimes);
+    squareArea = Iexcit2 * inDur2;  % Total area under the square pulse
+    pulseArea = pulseDuration * numPulses;  % Total duration of all pulses
+    IRamp = squareArea / pulseArea;  % Adjusted amplitude to match total area
+
+    % Apply pulses to ARamp
+    for k = 1:numPulses
+        startIdx = stimDelay + pulseTimes(k);  % +1 to convert to 1-based index
+        endIdx = startIdx + pulseDuration;
+        if endIdx <= T
+            ARamp(:, startIdx:endIdx) = IRamp;  % Apply adjusted amplitude
+        end
     end
 end
+
+
 
 %% Build noise
 

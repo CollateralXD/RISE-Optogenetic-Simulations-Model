@@ -125,15 +125,20 @@ elseif pStruct.rampTypeFlag == 10    % Sinusoidal Waves with Same Area Under Cur
         ARamp(:,startIdx:endIdx) = repmat(sinWave, N, 1);
     end
 elseif pStruct.rampTypeFlag == 11 % Poisson Spike Train
-    centerFrequency = 10;
+    centerFrequency = pStruct.tmpFrequency;
     pulseDuration = 5;
     refractoryPeriod = 1;
 
     n = 1;
+    nPulses = 0;
     while n < inDur2
         n = max(n + poissrnd(centerFrequency), n+pulseDuration+refractoryPeriod);
         ARamp(:,stimDelay+n+1:stimDelay+1+n+pulseDuration)  = Iexcit2;
+        nPulses = nPulses + 1;
     end
+
+    a = nPulses * Iexcit2 * pulseDuration;
+    ARamp(:,stimDelay:stimDelay+inDur2) = ARamp(:,stimDelay:stimDelay+inDur2) * squarea / a;
 elseif pStruct.rampTypeFlag == 12 % Double sinusoidal with fixed area under curve
     ratio = pStruct.ampRatio;
     % ratio = 0.5;

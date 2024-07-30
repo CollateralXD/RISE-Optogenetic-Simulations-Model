@@ -11,7 +11,7 @@
 
 
 %6 — evenly spaced pulsatile, %8 — sinusoidal
-pStruct.rampTypeFlag = 12;
+pStruct.rampTypeFlag = 11;
 pStruct.simTypeFlag         = 2;        %1 = Linear; 2 = Linear with Adaptation
 pStruct.noiseFlag           = 0;        %0 = no noise; 1 = White noise; 2 = ChR2 Noise; 3 = Distance noise; 4 = Combined all noise
 saveFlag                    = 0;
@@ -93,7 +93,7 @@ end
 pStruct.W = W; pStruct.H = H; pStruct.AH = AH;  %Add wtmats to pStruct
 
 %Set up search variables and parameters
-nPs                     = 101;
+nPs                     = 50;
 pLim                    = 250;      %250 for inDur2; 500 for stimDelay; 1 for noiseSigma
 pFloor                  = 0;
 nRamps                  = 21;
@@ -104,13 +104,14 @@ rampPercs = linspace(0,rampLim,nRamps);
 
 %6, 8, 9, 10
 frequencyFloor = 1;
-frequencyLim = 100;
-nFrequency = 100;
+frequencyLim = 150;
+nFrequency = 50;
 frequencyPercs = linspace(frequencyFloor,frequencyLim,nFrequency);
 %12, 13
 nAmpRatio = 50;
 ampRatioLower = 1/nAmpRatio;
 ampRatioUpper = 1-(1/nAmpRatio);
+disp(ampRatioUpper);
 ampRatioPercs = linspace(1/nAmpRatio, 1-(1/nAmpRatio), nAmpRatio);
 
 nFreqRatio = 50;
@@ -191,7 +192,7 @@ yAxisLowerBound = pFloor;
 yAxisUpperBound = pLim;
 percs1 = rampPercs;
 percs2 = pVect;
-if (pStruct.rampTypeFlag == 6 || pStruct.rampTypeFlag == 8 || pStruct.rampTypeFlag == 9 || pStruct.rampTypeFlag == 10)
+if (pStruct.rampTypeFlag == 6 || pStruct.rampTypeFlag == 8 || pStruct.rampTypeFlag == 9 || pStruct.rampTypeFlag == 10 || pStruct.rampTypeFlag == 11)
     bound1 = nFrequency;
     xAxis = "Frequency (hz)";
     xAxisLowerBound = frequencyFloor;
@@ -204,8 +205,8 @@ elseif (pStruct.rampTypeFlag == 12 || pStruct.rampTypeFlag == 13)
     xAxisLowerBound = ampRatioLower;
     xAxisUpperBound = ampRatioUpper;
     yAxis = "Frequency Ratio";
-    xAxisLowerBound = freqRatioLower;
-    xAxisUpperBound = freqRatioUpper;
+    yAxisLowerBound = freqRatioLower;
+    yAxisUpperBound = freqRatioUpper;
     percs1 = ampRatioPercs;
     percs2 = freqRatioPercs;
 end
@@ -214,15 +215,15 @@ end
 
 for i = 1:bound1
         pStruct.tmpFrequency = percs1(i);
-        pStruct.ampRatio = percs1(i);
-        pStruct.tmpRamp = percs1(i);         %Define ramp percentage
+        % pStruct.ampRatio = percs1(i);
+        % pStruct.tmpRamp = percs1(i);         %Define ramp percentage
     for j = 1:bound2
         % Vary 
-        pStruct.freqRatio = percs2(j);
+        % pStruct.freqRatio = percs2(j);
         % pStruct.tmpRamp = percs2(j);         %Define ramp percentage
-        % pStruct.inDur2 = percs2(j);
+        pStruct.inDur2 = percs2(j);
 
-        pStruct.rampLen     = round(pStruct.tmpRamp*pStruct.inDur2);   %Define ramp length
+        % pStruct.rampLen     = round(pStruct.tmpRamp*pStruct.inDur2);   %Define ramp length
         %Run function
         [actTmp,hactTmp,inTmp] = ripExtend_fast_V2(pStruct);     %Run simulation
         %Calculate stats
@@ -257,46 +258,18 @@ cbMax = 5;
 
 %Plot map of d-scores
 figure; set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.35, 0.65]); aaa = gca;
+%% 
 
 % COHEN'S D
 imagesc(flipud(outputs.dsNanCor'),[0,cbMax]); % All Nan set to tmpmax
+% disp(xAxisUpperBound);
+xticks(linspace(0, length(percs1), 10));
+xticklabels(linspace(xAxisLowerBound,xAxisUpperBound,10));
+yticks(linspace(0, length(percs2), 10));
+yticklabels(linspace(yAxisLowerBound,yAxisUpperBound,10));
 
-aaa.YTick = yAxisLowerBound:yAxisUpperBound:length(percs2);
-yticklabels(linspace(yAxisLowerBound,yAxisUpperBound,10))
-aaa.XTick = xAxisLowerBound:xAxisUpperBound:length(percs1);
-xticklabels(linspace(xAxisLowerBound,xAxisUpperBound,10))
-% if (ismember([12,13],pStruct.rampTypeFlag))
-    % aaa.YTick = 0:nFreqRatio:nFreqRatio;
-    % yticklabels(linspace(freqRatioLower,freqRatioUpper,10));
-    % aaa.XTick = 0:1:10;
-    % xticklabels(0:0.1:1);
-% 
-%     aaa.YTick = 1:round((nPs-1)/5):nPs;   %Reversed 0 at top, max at bottom
-% 
-%     yticklabels(linspace(pLim,pFloor,6));
-%     aaa.XTick = 1:round(nRamps-1)/5:nRamps;
-%     xticklabels(0:10:100);
-% 
-% else
-%     aaa.YTick = 1:round((nPs-1)/5):nPs;   %Reversed 0 at top, max at bottom
-%     yticklabels(linspace(pLim,pFloor,6));
-%     aaa.XTick = 1:round(nRamps-1)/5:nRamps;
-%     xticklabels(0:20:100);
-% end
-
-% % xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
-% if pStruct.rampTypeFlag == 8
-%     aaa.XTick = 1:round(nFrequency-1)/5:nRamps;
-%     xticklabels(0:frequencyLim/5:nFrequency);
-% else
-%     aaa.XTick = 1:round(nRamps-1)/5:nRamps;
-%     xticklabels(0:20:100);
-% end
-% xlabel('Ramp Percentage'); ylabel('Input Duration (ms)'); 
 xlabel(xAxis); ylabel(yAxis); 
 colormap hot; axis square; hcb = colorbar;
-% if mod(pStruct.rampTypeFlag,2) == 1; title("Forward Ramp Opto vs Control");
-% else; title("Double Ramp Opto vs Control"); end
 hcb.Label.String = "Cohen's d";
 set(aaa,'FontSize',24,'fontname','times')
 
@@ -305,15 +278,10 @@ figure; set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.35, 0.65])
 
 %SEQUENCE LENGTH
 imagesc(flipud(abs(outputs.Ns')),[0,N]);
-aaz.YTick = 1:round((nPs-1)/5):nPs;   %Reversed 0 at top, max at bottom
-aaz.XTick = 1:round(nRamps-1)/5:nRamps;
-yticklabels(linspace(pLim,pFloor,6));
-
-
-% xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
-xticklabels(0:20:100);
-% xlabel('Ramp Percentage'); ylabel('Input Duration (ms)'); 
-xlabel(xAxis); ylabel(yAxis); 
+xticks(linspace(0, length(percs1), 10));
+xticklabels(linspace(xAxisLowerBound,xAxisUpperBound,10));
+yticks(linspace(0, length(percs2), 10));
+yticklabels(linspace(yAxisLowerBound,yAxisUpperBound,10));
 axis square; hcb = colorbar;
 hcb.Label.String = "Sequence Length";
 set(aaz,'FontSize',24,'fontname','times')
@@ -324,13 +292,13 @@ figure; set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.1, 0.1, 0.35, 0.65])
 % disp(tmpINMax)
 % LEARN OVERLAP
 imagesc(flipud(outputs.dINs'),[0,tmpINMax]);
-aax.YTick = 1:round((nPs-1)/5):nPs; 
-aax.XTick = 1:round(nRamps-1)/5:nRamps;
-yticklabels(linspace(pLim,pFloor,6));
-xticklabels(0:rampLim*20:rampLim*100);      %For Ramp Percentage Label
+xticks(linspace(0, length(percs1), 10));
+xticklabels(linspace(xAxisLowerBound,xAxisUpperBound,10));
+yticks(linspace(0, length(percs2), 10));
+yticklabels(linspace(yAxisLowerBound,yAxisUpperBound,10));
 % xlabel('Ramp Percentage'); 
-% ylabel('Learn Overlap (ms)');
-xlabel(xAxis); ylabel(yAxis); 
+ylabel('Learn Overlap (ms)');
+xlabel(xAxis);
 colormap cool; axis square; hcb = colorbar;
 set(aax,'FontSize',24,'fontname','times')
 
